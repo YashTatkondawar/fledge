@@ -155,7 +155,7 @@ class TestPackages:
         r = r.read().decode()
         jdoc = json.loads(r)
         assert len(jdoc), "No data found"
-        assert 3 == len(jdoc['services'])
+        assert 4 == len(jdoc['services'])
         assert 'notification' in jdoc['services']
 
     def test_install_plugin_package(self, fledge_url, package_build_source_list, package_build_list,
@@ -189,9 +189,9 @@ class TestPackages:
             assert not errors, "Package errors have occurred: \n {}".format("\n".join(errors))
 
     def _verify_and_install_package(self, fledge_url, pkg_name, wait_time, retries):
-        print("Installing %s package" % pkg_name)
         global counter
         global errors
+        print("Installing %s package with counter value %s" % (pkg_name, counter))
         conn = http.client.HTTPConnection(fledge_url)
         data = {"format": "repository", "name": pkg_name}
         # POST Plugin
@@ -201,6 +201,7 @@ class TestPackages:
             msg = "POST Install plugin failed due to {} while attempting {}".format(r.reason, pkg_name)
             print(msg)
             errors.append(msg)
+            counter -= 1
             return
         r = r.read().decode()
         post_install_jdoc = json.loads(r)
@@ -234,8 +235,8 @@ class TestPackages:
                 msg = "GET Package status response failed while attempting {}".format(pkg_name)
                 print(msg)
                 errors.append(msg)
-                counter -= 1
-                break
+                return
+
             # sleep time added b/w retries
             time.sleep(wait_time * 3)
             max_retry_count -= 1
