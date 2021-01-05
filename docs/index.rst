@@ -23,4 +23,5 @@ Welcome to Fledge's documentation!
     92_downloads
     KERBEROS
     plugin_index
+    yash
 
